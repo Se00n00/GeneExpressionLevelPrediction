@@ -74,15 +74,15 @@ class Perceiver(nn.Module):
         conved = self.conv1d_attention(DNA_One_hot_encoded)
         convo_attention_pooled = self.conv_attention_layers(conved)
         reshaped = convo_attention_pooled.permute(0, 2, 1)
-        x = F.gelu(self.fcl1(reshaped))
+        x = self.fcl1(reshaped)
 
         # Attention Block for Convo-Attention and embeddings
         x, _ = self.conv_attention_decoder(x, DNA_contextual_embeddings, DNA_contextual_embeddings)
-        x = F.gelu(self.fcl2(x))
+        x = self.fcl2(x)
 
         averaged_Convo_embeddings = torch.mean(x, dim=1)
         concatenated = torch.cat((averaged_Contextual_embeddings, averaged_Convo_embeddings),1)
         
-        final_logits = F.gelu(self.final_linear(concatenated))
+        final_logits = self.final_linear(concatenated)
 
         return final_logits
